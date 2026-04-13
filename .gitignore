@@ -1,0 +1,13 @@
+# Ocultar credenciais e configurações locais
+.env
+config_login.json
+
+# Ocultar ambiente virtual do Python
+venv/
+env/
+__pycache__/
+
+# Ocultar arquivos compilados do PyInstaller
+build/
+dist/
+*.spec
