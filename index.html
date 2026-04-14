@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BS Optimizer Pro | Elite Performance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+
+    <div class="section-bg hero-bg"></div>
+    <div class="overlay-gradient"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <nav>
+        <div class="logo"><i class="fa-solid fa-bolt"></i> BS OPTIMIZER</div>
+        <ul class="nav-links">
+            <li><a href="#hero">Início</a></li>
+            <li><a href="#features">Recursos</a></li>
+            <li><a href="#comparativo">Performance</a></li>
+            <li><a href="#pricing">Planos</a></li>
+        </ul>
+        <div class="nav-actions" id="guestNav">
+            <button class="btn btn-ghost" onclick="openAuthModal('login')"><i class="fa-solid fa-user"></i> Login</button>
+            <button class="btn btn-primary" onclick="document.getElementById('pricing').scrollIntoView()"><i class="fa-solid fa-rocket"></i> Assinar</button>
+        </div>
+        <div class="nav-actions" id="userNav" style="display:none;">
+            <button class="user-btn" onclick="openProfileModal()">
+                <img src="" id="userAvatar" alt="Avatar">
+                <span id="navUsername">Perfil</span>
+            </button>
+            <button class="btn btn-ghost" style="padding: 11px 15px; border-color: rgba(255,58,58,0.3); color: var(--danger);" onclick="logout()"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+    </nav>
+
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="badge-top"><i class="fa-solid fa-crown" style="margin-right: 5px;"></i> OTIMIZADOR DEFINITIVO PARA BLOOD STRIKE</div>
+            <h1>PERFORMANCE <br><em class="text-glow font-orbitron" style="font-style:normal;">SEM LIMITES</em></h1>
+            <p>Destrave o núcleo do seu PC. Elimine o Input Lag, estabilize o FPS em combate e obtenha a movimentação mais rápida e fluida do servidor.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-large" style="padding: 16px 32px; font-size: 16px;" onclick="document.getElementById('pricing').scrollIntoView()"><i class="fa-solid fa-rocket"></i> Ver Planos VIP</button>
+                <button class="btn btn-ghost btn-large" style="padding: 16px 32px; font-size: 16px;" onclick="openAuthModal('registro')"><i class="fa-solid fa-user-plus"></i> Criar Conta</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="features reveal" id="features">
+        <div class="section-header">
+            <h2>Suite de <span class="text-glow">Ferramentas</span></h2>
+            <p>O BS Optimizer não é um "limpador de lixo". É um injetor de performance a nível de sistema.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-microchip"></i></div>
+                <h3>BSEngine (CPU & GPU)</h3>
+                <p>Acordamos 100% dos núcleos do seu processador e forçamos o plano de energia oculto da placa de vídeo.</p>
+                <ul class="f-list"><li><i class="fa-solid fa-check"></i> Unpark de CPU</li><li><i class="fa-solid fa-check"></i> GPU Priority Mode</li></ul>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-keyboard"></i></div>
+                <h3>SnapTap SOCD Integrado</h3>
+                <p>O software anula instantaneamente a sobreposição de teclas opostas (A+D).</p>
+                <ul class="f-list"><li><i class="fa-solid fa-check"></i> Strafe perfeito</li><li><i class="fa-solid fa-check"></i> Zero Delay de Teclado</li></ul>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
+                <h3>Smart Network</h3>
+                <p>Aplicamos a rota Cloudflare no adaptador de rede e resetamos os pacotes DNS para evitar Packet Loss.</p>
+                <ul class="f-list"><li><i class="fa-solid fa-check"></i> Rota DNS Otimizada</li><li><i class="fa-solid fa-check"></i> Anti Packet Loss</li></ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison reveal" id="comparativo">
+        <div class="section-bg features-bg"></div>
+        <div class="overlay-gradient"></div>
+        <div class="section-header">
+            <h2>A Diferença é <span class="text-glow">Real</span></h2>
+            <p style="color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Simulação técnica baseada em testes. O BS Optimizer extrai o potencial que o Windows esconde.</p>
+        </div>
+        <div class="comp-grid">
+            <div class="comp-card before">
+                <div class="comp-label bad"><i class="fa-solid fa-xmark"></i> SEM BS OPTIMIZER</div>
+                <div class="fps-display" id="fpsBefore">87</div>
+                <div class="fps-sub">FPS — Instável e pesado</div>
+                <ul class="comp-list">
+                    <li><i class="fa-solid fa-xmark"></i> Quedas de FPS ao atirar</li>
+                    <li><i class="fa-solid fa-xmark"></i> Input lag alto no mouse e teclado</li>
+                </ul>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="comp-card after">
+                <div class="comp-label good"><i class="fa-solid fa-crown"></i> COM BS OPTIMIZER</div>
+                <div class="fps-display" id="fpsAfter">488</div>
+                <div class="fps-sub" style="color:var(--accent);">FPS — Ultra Fluido</div>
+                <ul class="comp-list">
+                    <li><i class="fa-solid fa-check"></i> FPS cravado em combate</li>
+                    <li><i class="fa-solid fa-check"></i> Timer Resolution 0.5ms</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing reveal" id="pricing">
+        <div class="section-bg pricing-bg"></div>
+        <div class="overlay-gradient"></div>
+        <div class="section-header">
+            <h2>Escolha seu <span class="text-glow">Plano VIP</span></h2>
+            <p style="color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Pagamento Seguro via PIX. Key liberada na tela e enviada para seu e-mail na hora.</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3 class="plan-name">Plano Semanal</h3>
+                <div class="plan-price">R$ 15<span>/7 dias</span></div>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check-circle"></i> Otimização Full FPS</li>
+                    <li><i class="fa-solid fa-check-circle"></i> Roteamento Cloudflare</li>
+                </ul>
+                <button class="btn btn-ghost" style="width:100%; margin-top:20px;" onclick="buyPlan('7 Dias')">Selecionar 7 Dias</button>
+            </div>
+            <div class="price-card featured">
+                <div class="price-badge"><i class="fa-solid fa-fire"></i> MAIS VENDIDO</div>
+                <h3 class="plan-name">Plano Mensal Pro</h3>
+                <div class="plan-price">R$ 35<span>/30 dias</span></div>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check-circle"></i> <strong>Todas as funções do Semanal</strong></li>
+                    <li><i class="fa-solid fa-check-circle"></i> SnapTap (SOCD) Desbloqueado</li>
+                    <li><i class="fa-solid fa-check-circle"></i> Mira Customizada Overlay</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="buyPlan('30 Dias')"><i class="fa-brands fa-pix"></i> Assinar via PIX</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo" style="font-size: 16px; justify-content: center;"><i class="fa-solid fa-bolt"></i> BS OPTIMIZER</div>
+        <p>&copy; 2026 BS Optimizer Pro. Desenvolvido para máxima performance.</p>
+    </footer>
+
+    <div class="wa-widget">
+        <div class="wa-box" id="waBox">
+            <div class="wa-icon-top"><i class="fa-solid fa-comment-dots"></i></div>
+            <div class="wa-title">Precisa de suporte com o BS Optimizer?</div>
+            <a href="https://api.whatsapp.com/send?phone=5587981215180&text=Ol%C3%A1,%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20o%20BSOptimizer.%20Poderiam%20me%20ajudar%20com%20isso?" target="_blank" class="wa-btn">
+                <span><i class="fa-brands fa-whatsapp"></i> Iniciar Conversa de Suporte</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+            <div class="wa-footer"><i class="fa-solid fa-bolt"></i> BS Optimizer Pro</div>
+        </div>
+        <button class="wa-float-btn" onclick="toggleWa()" id="waToggleBtn">
+            <i class="fa-solid fa-chevron-down" id="waIcon"></i>
+        </button>
+    </div>
+
+    <div class="overlay" id="authOverlay" onclick="if(event.target==this) closeModal('authOverlay')">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('authOverlay')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <i class="fa-solid fa-user-astronaut"></i>
+                <h2 id="authTitle">Acessar Painel</h2>
+                <p id="authSub">Entre para gerenciar sua assinatura.</p>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="input-wrap"><i class="fa-solid fa-user"></i><input type="text" id="authUser" placeholder="Nome de Usuário" required autocomplete="off"></div>
+                <div class="input-wrap" id="emailWrap" style="display:none;"><i class="fa-solid fa-envelope"></i><input type="email" id="authEmail" placeholder="E-mail (Para receber Keys)" autocomplete="off"></div>
+                <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="authPass" placeholder="Senha" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:15px;" id="btnAuth">ENTRAR</button>
+            </form>
+            <div class="auth-switch" id="switchText">Não tem conta? <a href="#" onclick="toggleAuthMode()">Crie uma gratuitamente</a></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="profileOverlay" onclick="if(event.target==this) closeModal('profileOverlay')">
+        <div class="modal profile" id="profileBox">
+            <button class="modal-close" onclick="closeModal('profileOverlay')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header" style="margin-bottom: 25px;">
+                <h2 style="font-size: 26px; color: #fff;" id="profName">Meu Perfil</h2>
+            </div>
+            <div class="prof-stats-grid">
+                <div class="prof-box active-plan">
+                    <i class="fa-solid fa-crown"></i>
+                    <div class="val skeleton"></div><div class="val real-data" id="profStatus">---</div>
+                    <div class="lbl">Status da Conta</div>
+                </div>
+                <div class="prof-box">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    <div class="val skeleton"></div><div class="val real-data" id="profDias">0</div>
+                    <div class="lbl">Dias Restantes</div>
+                </div>
+            </div>
+            <h3 style="font-family: 'Rajdhani'; font-size: 18px; margin-bottom: 15px; color: #fff;">Histórico de Keys</h3>
+            <div class="table-container">
+                <table id="historyTable">
+                    <thead><tr><th>Plano</th><th>Chave de Ativação</th><th>Status</th></tr></thead>
+                    <tbody id="historyBody">
+                        <tr class="skeleton-row"><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="pixOverlay">
+        <div class="modal pix-container">
+            <button class="modal-close" onclick="fecharPix()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header" style="margin-bottom: 15px;">
+                <i class="fa-brands fa-pix" style="color: var(--accent); filter: drop-shadow(0 0 10px rgba(0,230,118,0.5));"></i>
+                <h2 style="color: #fff;">Pagamento Seguro</h2>
+                <p>Escaneie o QR Code ou copie o código abaixo para liberar sua Key.</p>
+            </div>
+            <img src="" id="pixQrImage" class="pix-qr" alt="QR Code PIX">
+            <div class="pix-code" id="pixCodeText">Gerando código PIX...</div>
+            <button class="btn btn-primary" style="width:100%; background: linear-gradient(135deg, var(--accent), #00b35c); color: #000; box-shadow: 0 5px 15px rgba(0,230,118,0.2);" onclick="copiarPix()"><i class="fa-solid fa-copy"></i> Copiar Código PIX</button>
+            <div class="pix-loader"><i class="fa-solid fa-circle-notch fa-spin" style="color: var(--accent);"></i> Aguardando confirmação do banco...</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Mensagem</span></div>
+
+    <script src="app.js"></script> 
+</body>
+</html>
