@@ -11,10 +11,12 @@ def desbloquear_fps():
 
     # No Windows, os arquivos do Blood Strike geralmente ficam no AppData ou Documentos
     appdata = os.environ.get('LOCALAPPDATA', '')
+    locallow = os.path.join(os.environ.get('USERPROFILE', ''), 'AppData', 'LocalLow')
     documentos = os.path.join(os.environ.get('USERPROFILE', ''), 'Documents')
     
     pastas_alvo = [
         os.path.join(appdata, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor'),
+        os.path.join(locallow, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor'),
         os.path.join(documentos, 'BloodStrike', 'Config')
     ]
     

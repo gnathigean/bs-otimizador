@@ -9,10 +9,12 @@ def aplicar_potato():
         return True, "✅ (Simulação) Modo Batata ativado no .ini!"
 
     appdata = os.environ.get('LOCALAPPDATA', '')
+    locallow = os.path.join(os.environ.get('USERPROFILE', ''), 'AppData', 'LocalLow')
     documentos = os.path.join(os.environ.get('USERPROFILE', ''), 'Documents')
     
     pastas_alvo = [
         os.path.join(appdata, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor'),
+        os.path.join(locallow, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor'),
         os.path.join(documentos, 'BloodStrike', 'Config')
     ]
     

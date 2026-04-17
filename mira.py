@@ -10,7 +10,10 @@ overlay_rodando = False
 def iniciar_overlay():
     global janela_mira, cor_atual, modelo_atual, overlay_rodando
     
-    janela_mira = tk.Tk()
+    if janela_mira and janela_mira.winfo_exists():
+        janela_mira.destroy()
+        
+    janela_mira = tk.Toplevel()
     janela_mira.overrideredirect(True)
     janela_mira.wm_attributes("-topmost", True)
     
@@ -30,8 +33,8 @@ def iniciar_overlay():
     pos_y = (altura_tela // 2) - (tamanho // 2)
     
     janela_mira.geometry(f"{tamanho}x{tamanho}+{pos_x}+{pos_y}")
-    canvas = tk.Canvas(janela_mira, width=tamanho, height=tamanho, bg=bg_color, highlightthickness=0)
-    canvas.pack()
+    canvas = tk.Canvas(janela_mira, width=tamanho, height=tamanho, bg=bg_color, highlightthickness=0, bd=0, relief="flat")
+    canvas.pack(fill="both", expand=True)
 
     def desenhar():
         canvas.delete("all")
@@ -57,7 +60,6 @@ def iniciar_overlay():
 
     desenhar()
     janela_mira.after(200, verificar_atualizacoes)
-    janela_mira.mainloop()
 
 def ativar_mira(cor, modelo="padrão"):
     global cor_atual, modelo_atual, overlay_rodando
@@ -65,8 +67,11 @@ def ativar_mira(cor, modelo="padrão"):
     modelo_atual = modelo
     if not overlay_rodando:
         overlay_rodando = True
-        threading.Thread(target=iniciar_overlay, daemon=True).start()
+        iniciar_overlay()
 
 def desativar_mira():
-    global overlay_rodando
+    global overlay_rodando, janela_mira
     overlay_rodando = False
+    if janela_mira and janela_mira.winfo_exists():
+        janela_mira.destroy()
+        janela_mira = None

@@ -9,7 +9,11 @@ def aplicar_resolucao_esticada():
         return True, "✅ (Simulação) Resolução 1440x1080 aplicada!"
 
     appdata = os.environ.get('LOCALAPPDATA', '')
-    pastas_alvo = [os.path.join(appdata, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor')]
+    locallow = os.path.join(os.environ.get('USERPROFILE', ''), 'AppData', 'LocalLow')
+    pastas_alvo = [
+        os.path.join(appdata, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor'),
+        os.path.join(locallow, 'NetEase', 'BloodStrike', 'Saved', 'Config', 'WindowsNoEditor')
+    ]
     
     try:
         for pasta in pastas_alvo:

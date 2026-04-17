@@ -20,22 +20,26 @@ def iniciar_overlay():
         janela_ping.configure(bg="gray10")
         bg_color = "gray10"
         
-    # Posiciona no canto superior esquerdo
-    janela_ping.geometry(f"130x40+20+20")
+    # Posiciona no canto superior esquerdo (Abaixo do Tracker de Hardware)
+    janela_ping.geometry(f"130x40+20+120")
     
     lbl_ping = tk.Label(janela_ping, text="Ping: -- ms", font=("Arial", 14, "bold"), fg="#00E676", bg=bg_color)
     lbl_ping.pack(expand=True, fill="both")
     
     def atualizar():
         if not overlay_rodando:
-            janela_ping.destroy()
+            if janela_ping and janela_ping.winfo_exists():
+                janela_ping.destroy()
+            return
+        if not janela_ping or not janela_ping.winfo_exists():
             return
         try:
             ping = dns_ping.obter_ping_atual()
             cor = "#00E676" if ping < 50 else "#FF5252"
             lbl_ping.config(text=f"Ping: {ping} ms", fg=cor)
         except: pass
-        janela_ping.after(2000, atualizar)
+        if janela_ping and janela_ping.winfo_exists() and overlay_rodando:
+            janela_ping.after(2000, atualizar)
         
     janela_ping.after(100, atualizar)
     janela_ping.mainloop()
