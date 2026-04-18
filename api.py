@@ -135,9 +135,12 @@ def gerar_pagamento():
                 "qr_code_base64": pagamento["point_of_interaction"]["transaction_data"]["qr_code_base64"]
             })
         else:
+            # LOG para depuração direta no Render
+            print(f"DEBUG MP ERRO: {pagamento}")
             erro_mp = pagamento.get('message', 'Erro na API Mercado Pago')
             return jsonify({"sucesso": False, "mensagem": erro_mp})
     except Exception as e:
+        print(f"DEBUG MP EXCEPTION: {str(e)}")
         return jsonify({"sucesso": False, "mensagem": str(e)})
 
 @app.route('/api/check_payment/<int:payment_id>', methods=['GET'])
