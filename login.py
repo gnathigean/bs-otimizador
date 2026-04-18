@@ -5,10 +5,13 @@ import platform
 import json
 import os
 
-import banco_dados
+import requests
 import sys
 
 ctk.set_appearance_mode("dark")
+
+# URL da API (Mude para a URL do Render após o deploy)
+API_BASE_URL = "https://bs-optimizer-api.onrender.com"
 
 # ==============================================================================
 # GESTÃO DE ARQUIVOS OCULTOS E HWID
@@ -138,7 +141,16 @@ class TelaLogin(ctk.CTk):
     def _thread_login(self, user, senha):
         hwid_maquina = obter_hwid()
         try:
-            sucesso, user_id, msg = banco_dados.validar_login(user, senha, hwid_maquina)
+            response = requests.post(f"{API_BASE_URL}/api/desktop/login", json={
+                "username": user,
+                "password": senha,
+                "hwid": hwid_maquina
+            }, timeout=10)
+            dados = response.json()
+            sucesso = dados.get("sucesso")
+            user_id = dados.get("user_id")
+            msg = dados.get("mensagem")
+            
             if sucesso:
                 self.after(0, lambda: self._pos_login_ok(user_id, user, senha))
             else:
@@ -165,7 +177,12 @@ class TelaLogin(ctk.CTk):
 
     def _thread_assinatura(self):
         try:
-            tem_licenca, dias_restantes = banco_dados.verificar_licenca_ativa(self.user_id_logado)
+            response = requests.post(f"{API_BASE_URL}/api/desktop/licenca", json={
+                "user_id": self.user_id_logado
+            }, timeout=10)
+            dados = response.json()
+            tem_licenca = dados.get("tem_licenca")
+            dias_restantes = dados.get("dias_restantes")
             self.after(0, lambda: self._pos_assinatura(tem_licenca, dias_restantes))
         except Exception as e:
             self.after(0, lambda: self._pos_assinatura_erro(e))
@@ -196,7 +213,14 @@ class TelaLogin(ctk.CTk):
         chave = self.entry_key.get().strip()
         if not chave: return messagebox.showwarning("Aviso", "Insira uma chave.")
         try:
-            sucesso, msg = banco_dados.ativar_key(self.user_id_logado, chave)
+            response = requests.post(f"{API_BASE_URL}/api/desktop/ativar", json={
+                "user_id": self.user_id_logado,
+                "key": chave
+            }, timeout=10)
+            dados = response.json()
+            sucesso = dados.get("sucesso")
+            msg = dados.get("mensagem")
+            
             if sucesso:
                 messagebox.showinfo("Sucesso!", msg)
                 self.verificar_assinatura() 

@@ -27,6 +27,7 @@ function toggleWa() {
 const modal = document.getElementById('authModal');
 let isLogin = true;
 let usuarioLogadoID = null;
+const API_BASE_URL = "https://bs-optimizer-api.onrender.com"; // Mude para a URL do Render após o deploy
 
 function openAuthModal(mode) { setAuthMode(mode); modal.style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -53,7 +54,7 @@ async function handleAuth(event) {
     btnSubmit.disabled = true;
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/auth', {
+        const response = await fetch(`${API_BASE_URL}/api/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: user, password: pass, mode: isLogin ? 'login' : 'registro' })
@@ -90,7 +91,7 @@ async function buyPlan(plano) {
     }
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/comprar', {
+        const response = await fetch(`${API_BASE_URL}/api/comprar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: usuarioLogadoID, plano: plano })

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import banco_dados
 import smtplib
@@ -12,6 +12,18 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+@app.route('/')
+def home():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    # Lista de extensões permitidas para evitar expor arquivos sensíveis como .env ou .py
+    extensoes_permitidas = ('.js', '.css', '.png', '.jpg', '.jpeg', '.svg', '.ico', '.json')
+    if path.endswith(extensoes_permitidas):
+        return send_from_directory('.', path)
+    return "Not Found", 404
 
 EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE")
 EMAIL_SENHA = os.getenv("EMAIL_SENHA")
@@ -152,6 +164,39 @@ def check_payment(payment_id):
     except Exception as e:
         return jsonify({"sucesso": False, "mensagem": str(e)})
 
+@app.route('/api/desktop/login', methods=['POST'])
+def desktop_login():
+    dados = request.json
+    usuario = dados.get('username')
+    senha = dados.get('password')
+    hwid = dados.get('hwid')
+    if not usuario or not senha:
+        return jsonify({"sucesso": False, "mensagem": "Usuário e senha são obrigatórios."})
+    
+    sucesso, user_id, msg = banco_dados.validar_login(usuario, senha, hwid)
+    return jsonify({"sucesso": sucesso, "user_id": user_id, "mensagem": msg})
+
+@app.route('/api/desktop/licenca', methods=['POST'])
+def desktop_licenca():
+    user_id = request.json.get('user_id')
+    if not user_id:
+        return jsonify({"sucesso": False, "mensagem": "ID de usuário ausente."})
+    
+    tem_licenca, dias_restantes = banco_dados.verificar_licenca_ativa(user_id)
+    return jsonify({"sucesso": True, "tem_licenca": tem_licenca, "dias_restantes": dias_restantes})
+
+@app.route('/api/desktop/ativar', methods=['POST'])
+def desktop_ativar():
+    dados = request.json
+    user_id = dados.get('user_id')
+    chave = dados.get('key')
+    if not user_id or not chave:
+        return jsonify({"sucesso": False, "mensagem": "ID de usuário e Key são obrigatórios."})
+    
+    sucesso, msg = banco_dados.ativar_key(user_id, chave)
+    return jsonify({"sucesso": sucesso, "mensagem": msg})
+
 if __name__ == '__main__':
-    print("⚡ Servidor Web BS Optimizer rodando na porta 5000...")
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"⚡ Servidor Web BS Optimizer rodando na porta {port}...")
+    app.run(host='0.0.0.0', port=port)

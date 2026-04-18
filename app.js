@@ -35,6 +35,7 @@ let isLoginMode = true;
 let loggedUserID = null; 
 let loggedUserEmail = ""; 
 let pollingInterval = null;
+const API_BASE_URL = "https://bs-optimizer-api.onrender.com"; // Mude para a URL do Render após o deploy
 
 function openAuthModal(mode) {
     isLoginMode = (mode === 'login');
@@ -57,7 +58,7 @@ async function handleAuth(e) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...'; btn.disabled = true;
 
     try {
-        const res = await fetch('http://127.0.0.1:5000/api/auth', {
+        const res = await fetch(`${API_BASE_URL}/api/auth`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: u, password: p, email: em, mode: isLoginMode ? 'login' : 'registro' })
         });
@@ -97,7 +98,7 @@ async function openProfileModal() {
     document.getElementById('profileBox').classList.add('loading');
     
     try {
-        const res = await fetch('http://127.0.0.1:5000/api/perfil', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: loggedUserID }) });
+        const res = await fetch(`${API_BASE_URL}/api/perfil`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: loggedUserID }) });
         const data = await res.json();
         if(data.sucesso) {
             const p = data.perfil;
@@ -129,7 +130,7 @@ async function buyPlan(plano) {
     showToast("info", "Gerando cobrança PIX...");
     
     try {
-        const res = await fetch('http://127.0.0.1:5000/api/comprar', { 
+        const res = await fetch(`${API_BASE_URL}/api/comprar`, { 
             method: 'POST', headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify({ user_id: loggedUserID, plano: plano, email: loggedUserEmail }) 
         });
@@ -146,7 +147,7 @@ async function buyPlan(plano) {
 
 async function checkPaymentStatus(paymentId) {
     try {
-        const res = await fetch(`http://127.0.0.1:5000/api/check_payment/${paymentId}`);
+        const res = await fetch(`${API_BASE_URL}/api/check_payment/${paymentId}`);
         const data = await res.json();
         if(data.status === "approved") {
             clearInterval(pollingInterval); fecharPix();

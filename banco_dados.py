@@ -17,7 +17,7 @@ DB_CONFIG = {
 }
 
 def conectar():
-    return psycopg2.connect(**DB_CONFIG)
+    return psycopg2.connect(**DB_CONFIG, sslmode='require')
 
 def inicializar_banco():
     conn = conectar()
