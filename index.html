@@ -14,7 +14,9 @@
     <div class="cursor-glow" id="cursorGlow"></div>
 
     <nav>
-        <div class="logo"><img src="logo222.png"" alt="BS Optimizer Logo"> BS OPTIMIZER</div>
+        <div class="logo">
+            <img src="logo.png" alt="BS Optimizer Pro" class="logo-img">
+        </div>
         <ul class="nav-links">
             <li><a href="#hero">Início</a></li>
             <li><a href="#features">Recursos</a></li>
@@ -129,13 +131,15 @@
                     <li><i class="fa-solid fa-check-circle"></i> SnapTap (SOCD) Desbloqueado</li>
                     <li><i class="fa-solid fa-check-circle"></i> Mira Customizada Overlay</li>
                 </ul>
-                <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="buyPlan('30 Dias')"><i class="fa-brands fa-pix"></i> Assinar via PIX</button>
+                <button class="btn btn-primary" style="width:100%; margin-top:20px;" id="btnBuy30" onclick="console.log('Botao 30 dias clicado'); buyPlan('30 Dias')"><i class="fa-brands fa-pix"></i> Assinar via PIX</button>
             </div>
         </div>
     </section>
 
     <footer>
-        <div class="logo" style="font-size: 16px; justify-content: center;"><i class="fa-solid fa-bolt"></i> BS OPTIMIZER</div>
+        <div class="footer-logo">
+            <img src="logo.png" alt="BS Optimizer" class="logo-img-small">
+        </div>
         <p>&copy; 2026 BS Optimizer Pro. Desenvolvido para máxima performance.</p>
     </footer>
 
@@ -207,6 +211,8 @@
                 </table>
             </div>
         </div>
+    </div>
+
     <!-- MODAL CHECKOUT IDENTIFICAÇÃO -->
     <div class="overlay" id="checkoutOverlay" onclick="if(event.target==this) closeModal('checkoutOverlay')">
         <div class="modal">

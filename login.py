@@ -48,8 +48,8 @@ class TelaLogin(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.title("BS Optimizer Pro | Elite Access")
-        self.centralizar_janela(400, 550)
+        self.title("BS OPTIMIZER PRO | ELITE ACCESS")
+        self.centralizar_janela(450, 680)
         self.resizable(False, False)
         
         # Cores idênticas ao Site
@@ -60,16 +60,26 @@ class TelaLogin(ctk.CTk):
         self.login_sucesso = False
         self.dias_restantes = 0
 
-        self.lbl_titulo = ctk.CTkLabel(self, text="⚡ BS OPTIMIZER", font=ctk.CTkFont(family="Impact", size=34, weight="bold"), text_color="#8b5cf6")
-        self.lbl_titulo.pack(pady=(50, 5))
-        self.lbl_sub = ctk.CTkLabel(self, text="Painel de Acesso Exclusivo", font=("Inter", 13), text_color="#94a3b8")
-        self.lbl_sub.pack(pady=(0, 35))
+        # Adicionando a Logo Premium
+        try:
+            from PIL import Image
+            # Carregar a logo gerada
+            raw_img = Image.open("logo.png")
+            self.logo_img = ctk.CTkImage(light_image=raw_img, dark_image=raw_img, size=(130, 130))
+            self.lbl_logo = ctk.CTkLabel(self, image=self.logo_img, text="")
+            self.lbl_logo.pack(pady=(40, 10))
+        except Exception:
+            self.lbl_titulo = ctk.CTkLabel(self, text="⚡ BS OPTIMIZER", font=ctk.CTkFont(family="Orbitron", size=28, weight="bold"), text_color="#8b5cf6")
+            self.lbl_titulo.pack(pady=(50, 5))
 
-        self.entry_user = ctk.CTkEntry(self, placeholder_text="👤 Nome de Usuário", width=280, height=45, font=("Inter", 14), corner_radius=10, border_width=1, border_color="#1E1E2E", fg_color="#12121A", text_color="#f8fafc")
-        self.entry_user.pack(pady=10)
+        self.lbl_sub = ctk.CTkLabel(self, text="Painel de Acesso Exclusivo", font=("Inter", 14, "bold"), text_color="#94a3b8")
+        self.lbl_sub.pack(pady=(0, 40))
+
+        self.entry_user = ctk.CTkEntry(self, placeholder_text="👤 Nome de Usuário", width=340, height=50, font=("Inter", 14), corner_radius=12, border_width=2, border_color="#1E1E2E", fg_color="#0c0c12", text_color="#f8fafc")
+        self.entry_user.pack(pady=15)
         
-        self.entry_senha = ctk.CTkEntry(self, placeholder_text="🔒 Senha de Acesso", width=280, height=45, font=("Inter", 14), corner_radius=10, border_width=1, border_color="#1E1E2E", fg_color="#12121A", text_color="#f8fafc", show="•")
-        self.entry_senha.pack(pady=10)
+        self.entry_senha = ctk.CTkEntry(self, placeholder_text="🔒 Senha de Acesso", width=340, height=50, font=("Inter", 14), corner_radius=12, border_width=2, border_color="#1E1E2E", fg_color="#0c0c12", text_color="#f8fafc", show="•")
+        self.entry_senha.pack(pady=15)
 
         self.frame_opcoes = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_opcoes.pack(pady=12)
@@ -82,8 +92,8 @@ class TelaLogin(ctk.CTk):
         self.chk_auto = ctk.CTkCheckBox(self.frame_opcoes, text="Auto Login", variable=self.var_auto, font=("Inter", 12), text_color="#94a3b8", fg_color="#8b5cf6", hover_color="#a855f7", border_color="#8b5cf6", border_width=2)
         self.chk_auto.pack(side="left", padx=10)
 
-        self.btn_login = ctk.CTkButton(self, text="ENTRAR NA CONTA", width=280, height=45, font=("Inter", 14, "bold"), fg_color="#8b5cf6", hover_color="#a855f7", text_color="#ffffff", corner_radius=10, command=self.efetuar_login)
-        self.btn_login.pack(pady=(20, 15))
+        self.btn_login = ctk.CTkButton(self, text="AUTENTICAR NO SISTEMA", width=340, height=55, font=("Inter", 15, "bold"), fg_color="#8b5cf6", hover_color="#a855f7", text_color="#ffffff", corner_radius=12, command=self.efetuar_login)
+        self.btn_login.pack(pady=(25, 15))
 
         self.lbl_aviso_site = ctk.CTkLabel(self, text="Não tem conta? Crie no site oficial.", font=("Inter", 12), text_color="#555555")
         self.lbl_aviso_site.pack(pady=(5, 0))
@@ -156,7 +166,8 @@ class TelaLogin(ctk.CTk):
             else:
                 self.after(0, lambda: self._pos_login_erro("Acesso Negado", msg, user, senha))
         except Exception as e:
-            self.after(0, lambda: self._pos_login_erro("Sem Conexão", f"Erro de rede.\n{e}", user, senha))
+            msg_erro = str(e)
+            self.after(0, lambda: self._pos_login_erro("Sem Conexão", f"Erro de rede.\n{msg_erro}", user, senha))
 
     def _pos_login_ok(self, user_id, user, senha):
         self.user_id_logado = user_id
@@ -185,7 +196,8 @@ class TelaLogin(ctk.CTk):
             dias_restantes = dados.get("dias_restantes")
             self.after(0, lambda: self._pos_assinatura(tem_licenca, dias_restantes))
         except Exception as e:
-            self.after(0, lambda: self._pos_assinatura_erro(e))
+            msg_erro = str(e)
+            self.after(0, lambda: self._pos_assinatura_erro(msg_erro))
 
     def _pos_assinatura(self, tem_licenca, dias_restantes):
         self.btn_login.configure(state="normal")
