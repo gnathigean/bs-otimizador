@@ -340,6 +340,13 @@ class App(ctk.CTk):
         self.sw_engine_pro = self.criar_switch_com_info(container, "🛡️ Unity Engine Overdrive", "Força processamento assíncrono de shaders e desabilita telemetria interna da engine Unity.", command=self.acionar_engine_pro)
         self.sw_input_pro  = self.criar_switch_com_info(container, "⚡ Input Lag Destroyer 2.0", "Desativa Fullscreen Optimizations e reduz o MouseDataQueue para zero latência percebida.", command=self.acionar_input_pro)
         
+        # Versão Detectada
+        self.lbl_versao_detected = ctk.CTkLabel(
+            container, text=f"🎮 Versão Localizada: {gerenciador_config.detectar_versao_jogo()}",
+            font=("Inter", 12, "bold"), text_color=CORES["texto_secundario"]
+        )
+        self.lbl_versao_detected.pack(pady=(10, 0))
+        
         card_limpeza = ctk.CTkFrame(frame_pai, fg_color=CORES["card_info"], corner_radius=15, border_width=1, border_color=CORES["borda"])
         card_limpeza.pack(fill="x", padx=40, pady=20)
         
@@ -617,6 +624,7 @@ class App(ctk.CTk):
             (f"💽 Armazenamento: {info['disk']}",     1, 1),
             (f"🕒 Taxa de Atualização: {info['refresh']}Hz", 2, 0),
             (f"⚙️ Sistema: {info['os']}",             2, 1),
+            (f"🎮 Jogo: {gerenciador_config.detectar_versao_jogo()}", 3, 0),
         ]
         for text, r, c in labels:
             ctk.CTkLabel(
