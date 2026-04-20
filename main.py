@@ -15,7 +15,7 @@ import otimizacao_gpu, entrada_instantanea, antilag
 import resolucao, snaptap, tcp_otimizar, ping_overlay, tela_cheia, unpark_cpu
 import mira_bruta, shaders, potato_mode, game_booster, carregamento_turbo
 import limpeza_bloodstrike, telemetria_win, input_lag_remover
-import servico_elite, bloodstrike_engine_fix
+import servico_elite, bloodstrike_engine_fix, gerenciador_config, os
 
 # Módulos novos / corrigidos
 import overlay_pro        # tracker de hardware
@@ -327,6 +327,9 @@ class App(ctk.CTk):
         # Finalização da Inicialização (Após todos os frames serem criados)
         self.selecionar_frame("info")
         self.iniciar_monitor_ping()
+        
+        # Carrega preferências do usuário (Perfil Elite)
+        self.after(1000, self.carregar_preferencias) 
 
     def criar_aba_bs_pro(self, frame_pai):
         self.criar_titulo(frame_pai, "BLOOD STRIKE PRO — ENGINE EXCLUSIVE")
@@ -347,7 +350,31 @@ class App(ctk.CTk):
         
         self.btn_deep_clean = self.criar_botao_acao_com_info(card_limpeza, "🔥 Deep Clean (Assets)", "Faz uma faxina pesada nas pastas de shaders e logs da NetEase.", CORES["vermelho_neon"], "#d32f2f", command=self.acionar_deep_clean)
 
-        self.btn_deep_clean = self.criar_botao_acao_com_info(card_limpeza, "🔥 Deep Clean (Assets)", "Faz uma faxina pesada nas pastas de shaders e logs da NetEase.", CORES["vermelho_neon"], "#d32f2f", command=self.acionar_deep_clean)
+        # ── Card de Perfil e Lançamento ──────────────────────────────────────
+        card_perfil = ctk.CTkFrame(frame_pai, fg_color="#0a1a2e", corner_radius=15, border_width=1, border_color=CORES["azul_neon"])
+        card_perfil.pack(fill="x", padx=40, pady=(0, 20))
+        
+        ctk.CTkLabel(card_perfil, text="🏆 Gestão de Perfil Elite", font=("Inter", 14, "bold"), text_color=CORES["azul_neon"]).pack(pady=(15, 5))
+        
+        btn_row = ctk.CTkFrame(card_perfil, fg_color="transparent")
+        btn_row.pack(fill="x", padx=20, pady=10)
+        
+        self.btn_salvar_perfil = ctk.CTkButton(
+            btn_row, text="💾 Salvar Configuração Atual",
+            font=("Inter", 12, "bold"), height=38,
+            fg_color=CORES["roxo_destaque"], hover_color=CORES["roxo_hover"],
+            command=self.salvar_preferencias
+        )
+        self.btn_salvar_perfil.pack(side="left", expand=True, fill="x", padx=5)
+
+        self.btn_lancar_jogo = ctk.CTkButton(
+            btn_row, text="🚀 OTIMIZAR & LANÇAR JOGO",
+            font=("Inter", 12, "bold"), height=38,
+            fg_color=CORES["verde_neon"], hover_color="#00c853",
+            text_color="#000",
+            command=self.lancar_bloodstrike
+        )
+        self.btn_lancar_jogo.pack(side="right", expand=True, fill="x", padx=5)
 
     def _processar_fila_ui(self):
         try:
@@ -1141,9 +1168,100 @@ class App(ctk.CTk):
             self.ui_segura(lambda: messagebox.showinfo("Deep Clean", msg))
         threading.Thread(target=worker, daemon=True).start()
 
+    # ==================================================================
+    # GESTÃO DE CONFIGURAÇÕES E LANÇAMENTO
+    # ==================================================================
+
+    def salvar_preferencias(self):
+        switches = {
+            "fps_turbo":    self.sw_fps_turbo.get(),
+            "antilag":      self.sw_antilag.get(),
+            "timer":        self.sw_timer.get(),
+            "prioridade":   self.sw_prioridade.get(),
+            "competitivo":  self.sw_competitivo.get(),
+            "gpu":          self.sw_gpu.get(),
+            "potato":       self.sw_potato.get(),
+            "carregamento": self.sw_carregamento.get(),
+            "mira_bruta":   self.sw_mira_bruta.get(),
+            "input_lag":    self.sw_input_lag.get(),
+            "dns":          self.sw_dns.get(),
+            "tcp":          self.sw_tcp.get(),
+            "low_lat":      self.sw_low_lat.get(),
+            "ping_overlay": self.sw_ping_overlay.get(),
+            "tela_cheia":   self.sw_tela_cheia.get(),
+            "resolucao":    self.sw_resolucao.get(),
+            "tracker":      self.sw_tracker.get(),
+            "snaptap":      self.sw_snaptap.get(),
+            "unpark":       self.sw_unpark.get(),
+            "servicos":     self.sw_servicos.get(),
+            "telemetria":   self.sw_telemetria.get(),
+            "entrada":      self.sw_entrada.get(),
+            "audio":        self.sw_audio.get(),
+            "engine_pro":   self.sw_engine_pro.get(),
+            "input_pro":    self.sw_input_pro.get(),
+            "auto_clean":   self.sw_auto_clean.get(),
+        }
+        sucesso, msg = gerenciador_config.salvar_perfil(switches)
+        messagebox.showinfo("Perfil Elite", msg)
+
+    def carregar_preferencias(self):
+        config = gerenciador_config.carregar_perfil()
+        if not config: return
+        
+        # Mapeia chaves do JSON para seus switches e comandos
+        mapa = {
+            "fps_turbo":    (self.sw_fps_turbo,    self.acionar_fps_turbo),
+            "antilag":      (self.sw_antilag,      self.acionar_antilag),
+            "timer":        (self.sw_timer,        self.acionar_timer),
+            "prioridade":   (self.sw_prioridade,   self.acionar_prioridade),
+            "competitivo":  (self.sw_competitivo,  self.acionar_modo_competitivo),
+            "gpu":          (self.sw_gpu,          self.acionar_gpu),
+            "potato":       (self.sw_potato,       self.acionar_potato),
+            "carregamento": (self.sw_carregamento, self.acionar_carregamento),
+            "mira_bruta":   (self.sw_mira_bruta,   self.acionar_mira_bruta),
+            "input_lag":    (self.sw_input_lag,    self.acionar_input_lag),
+            "dns":          (self.sw_dns,          self.acionar_smart_dns),
+            "tcp":          (self.sw_tcp,          self.acionar_tcp),
+            "low_lat":      (self.sw_low_lat,      self.acionar_low_latency),
+            "ping_overlay": (self.sw_ping_overlay, self.acionar_ping_overlay),
+            "tela_cheia":   (self.sw_tela_cheia,   self.acionar_tela_cheia),
+            "resolucao":    (self.sw_resolucao,    self.acionar_resolucao),
+            "tracker":      (self.sw_tracker,      self.acionar_tracker),
+            "snaptap":      (self.sw_snaptap,      self.acionar_snaptap),
+            "unpark":       (self.sw_unpark,       self.acionar_unpark),
+            "servicos":     (self.sw_servicos,     self.acionar_servicos),
+            "telemetria":   (self.sw_telemetria,   self.acionar_telemetria),
+            "entrada":      (self.sw_entrada,      self.acionar_entrada),
+            "audio":        (self.sw_audio,        self.acionar_audio_competitivo),
+            "engine_pro":   (self.sw_engine_pro,   self.acionar_engine_pro),
+            "input_pro":    (self.sw_input_pro,    self.acionar_input_pro),
+            "auto_clean":   (self.sw_auto_clean,   None), # Não tem comando, só estado
+        }
+        
+        for chave, valor in config.items():
+            if chave in mapa:
+                sw_obj, cmd = mapa[chave]
+                if valor == 1:
+                    sw_obj.switch.select()
+                    if cmd: cmd() # Ativa a função de fato
+
+    def lancar_bloodstrike(self):
+        self.salvar_preferencias()
+        caminho = gerenciador_config.localizar_bloodstrike()
+        
+        if caminho:
+            try:
+                subprocess.Popen(caminho, shell=True)
+                messagebox.showinfo("Sucesso", "Otimizações Aplicadas!\nLançando Blood Strike...")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Não foi possível abrir o jogo: {e}")
+        else:
+            msg = "Não encontrei o BloodStrike.exe automaticamente.\n\nPor favor, abra o jogo manualmente agora."
+            messagebox.showwarning("Jogo não localizado", msg)
+
     def abrir_suporte_whatsapp(self):
         import webbrowser
-        webbrowser.open("https://wa.me/5511999999999?text=Olá,%20preciso%20de%20suporte%20com%20o%20BS%20Optimizer%20Pro")
+        webbrowser.open("https://wa.me/5587981215180?text=Olá,%20preciso%20de%20suporte%20com%20o%20BS%20Optimizer%20Pro")
 
 
     def on_closing(self):
