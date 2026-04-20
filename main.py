@@ -15,6 +15,7 @@ import otimizacao_gpu, entrada_instantanea, antilag
 import resolucao, snaptap, tcp_otimizar, ping_overlay, tela_cheia, unpark_cpu
 import mira_bruta, shaders, potato_mode, game_booster, carregamento_turbo
 import limpeza_bloodstrike, telemetria_win, input_lag_remover
+import servico_elite
 
 # Módulos novos / corrigidos
 import overlay_pro        # tracker de hardware
@@ -64,6 +65,10 @@ class App(ctk.CTk):
         
         self.fila_ui = queue.Queue()
         self._processar_fila_ui()
+
+        # Ativa o Serviço Dinâmico (SaaS Mode)
+        servico_elite.servico.iniciar()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -1051,6 +1056,14 @@ class App(ctk.CTk):
         import webbrowser
         webbrowser.open("https://wa.me/5511999999999?text=Olá,%20preciso%20de%20suporte%20com%20o%20BS%20Optimizer%20Pro")
 
+
+    def on_closing(self):
+        """Reverte as configurações críticas ao fechar para criar dependência do software."""
+        if messagebox.askyesno("Sair", "Deseja encerrar o BS Optimizer Pro?\nAs otimizações em tempo real serão desativadas."):
+            # Desativa o serviço e reverte o carregamento turbo
+            servico_elite.servico.parar()
+            threading.Thread(target=carregamento_turbo.reverter_carregamento, daemon=True).start()
+            self.destroy()
 
 if __name__ == "__main__":
     import sys
