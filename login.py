@@ -8,6 +8,10 @@ import os
 import requests
 import sys
 
+import updater_elite
+
+VERSAO_ATUAL = "3.5"
+
 ctk.set_appearance_mode("dark")
 
 # URL da API (Mude para a URL do Render após o deploy)
@@ -98,6 +102,9 @@ class TelaLogin(ctk.CTk):
 
         self.lbl_aviso_site = ctk.CTkLabel(self, text="Não tem conta? Crie no site oficial.", font=("Inter", 12), text_color="#555555")
         self.lbl_aviso_site.pack(pady=(5, 0))
+
+        # ── VERIFICAÇÃO DE UPDATE (Elite Mode) ──────────────────────────
+        self.after(500, lambda: updater_elite.verificar_atualizacao(self, VERSAO_ATUAL))
 
         # Painel de Licença (Inativo por padrão)
         self.frame_key = ctk.CTkFrame(self, fg_color="transparent")
