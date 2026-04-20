@@ -110,7 +110,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(sessao, text=f"👤 {self.username}",
                      font=("Inter", 14, "bold"), text_color=CORES["texto_base"]).pack(pady=(12, 0))
         
-        vip_tag = ctk.CTkFrame(sessao, fg_color="rgba(0, 230, 118, 0.1)", corner_radius=20)
+        vip_tag = ctk.CTkFrame(sessao, fg_color="#0a1a12", corner_radius=20, border_width=1, border_color="#00e676")
         vip_tag.pack(pady=5, padx=15)
         ctk.CTkLabel(vip_tag, text=f"👑 VIP: {self.dias_restantes} DIAS",
                      font=("Inter", 11, "bold"), text_color=CORES["verde_neon"]).pack(padx=12, pady=4)
