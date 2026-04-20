@@ -570,25 +570,50 @@ class App(ctk.CTk):
             ).grid(row=r, column=c, padx=10, pady=8, sticky="w")
 
     def obter_info_sistema(self):
+        # Fallbacks padrão
+        res = {
+            "cpu": platform.processor() or "Desconhecido",
+            "gpu": "Integrada / Genérica",
+            "ram": f"{round(psutil.virtual_memory().total / (1024**3))} GB",
+            "disk": "Local Disk",
+            "refresh": 60,
+            "os": f"{platform.system()} {platform.release()}"
+        }
+        
+        if platform.system() != "Windows":
+            return res
+
         try:
-            sistema = f"{platform.system()} {platform.release()}"
-            cpu = platform.processor()
-            if "Windows" in platform.system():
-                cpu = subprocess.check_output("wmic cpu get name", shell=True).decode().split('\n')[1].strip()
-            gpu = "Integrada / Desconhecida"
-            if "Windows" in platform.system():
-                gpu_raw = subprocess.check_output("wmic path win32_VideoController get name", shell=True).decode().split('\n')
-                gpu = gpu_raw[1].strip() if len(gpu_raw) > 1 else gpu
-            ram   = f"{round(psutil.virtual_memory().total / (1024**3))} GB Instalados"
-            usage = psutil.disk_usage('C:\\' if "Windows" in platform.system() else '/')
-            disk  = f"{round(usage.total / (1024**3))} GB Total"
-            refresh = 60
-            if "Windows" in platform.system():
+            # CPU Info (Mais compatível com Windows variados)
+            out_cpu = subprocess.check_output("wmic cpu get name", shell=True, stderr=subprocess.DEVNULL).decode(errors='ignore')
+            linhas_cpu = [l.strip() for l in out_cpu.split('\n') if l.strip()]
+            if len(linhas_cpu) > 1: res["cpu"] = linhas_cpu[1]
+
+            # GPU Info
+            out_gpu = subprocess.check_output("wmic path win32_VideoController get name", shell=True, stderr=subprocess.DEVNULL).decode(errors='ignore')
+            linhas_gpu = [l.strip() for l in out_gpu.split('\n') if l.strip()]
+            if len(linhas_gpu) > 1: res["gpu"] = linhas_gpu[1]
+
+            # Disk Info
+            usage = psutil.disk_usage('C:\\')
+            res["disk"] = f"{round(usage.total / (1024**3))} GB (C:)"
+
+            # Monitor Refresh Rate
+            try:
+                import ctypes
                 u32 = ctypes.windll.user32
-                refresh = u32.GetDeviceCaps(u32.GetDC(0), 116)
-            return {"cpu": cpu[:35], "gpu": gpu[:30], "ram": ram, "disk": disk, "refresh": refresh, "os": sistema}
+                dc = u32.GetDC(0)
+                res["refresh"] = ctypes.windll.gdi32.GetDeviceCaps(dc, 116) # VREFRESH
+                u32.ReleaseDC(0, dc)
+            except: pass
+
         except Exception:
-            return {"cpu": "Aguardando...", "gpu": "Aguardando...", "ram": "--", "disk": "--", "refresh": "--", "os": "Desconhecido"}
+            pass
+
+        # Limitar texto para não quebrar layout
+        res["cpu"] = res["cpu"][:30]
+        res["gpu"] = res["gpu"][:30]
+        return res
 
     # ==================================================================
     # AÇÕES — DESEMPENHO
