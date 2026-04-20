@@ -324,6 +324,10 @@ class App(ctk.CTk):
         self.criar_titulo(self.frame_stats, "BLOOD STRIKE STATS")
         self._criar_painel_stats()
 
+        # Finalização da Inicialização (Após todos os frames serem criados)
+        self.selecionar_frame("info")
+        self.iniciar_monitor_ping()
+
     def criar_aba_bs_pro(self, frame_pai):
         self.criar_titulo(frame_pai, "BLOOD STRIKE PRO — ENGINE EXCLUSIVE")
         
@@ -343,9 +347,7 @@ class App(ctk.CTk):
         
         self.btn_deep_clean = self.criar_botao_acao_com_info(card_limpeza, "🔥 Deep Clean (Assets)", "Faz uma faxina pesada nas pastas de shaders e logs da NetEase.", CORES["vermelho_neon"], "#d32f2f", command=self.acionar_deep_clean)
 
-        # Inicialização
-        self.selecionar_frame("info")
-        self.iniciar_monitor_ping()
+        self.btn_deep_clean = self.criar_botao_acao_com_info(card_limpeza, "🔥 Deep Clean (Assets)", "Faz uma faxina pesada nas pastas de shaders e logs da NetEase.", CORES["vermelho_neon"], "#d32f2f", command=self.acionar_deep_clean)
 
     def _processar_fila_ui(self):
         try:
