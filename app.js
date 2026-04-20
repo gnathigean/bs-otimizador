@@ -55,6 +55,7 @@ let loggedUserID = null;
 let loggedUserEmail = ""; 
 let loggedUserName = "";
 let pollingInterval = null;
+let selectedPlan = "";
 const API_BASE_URL = "https://bs-optimizer-api.onrender.com"; // Mude para a URL do Render após o deploy
 
 function openAuthModal(mode) {
@@ -152,15 +153,32 @@ function copiarKey(chave) { navigator.clipboard.writeText(chave); showToast("suc
 async function buyPlan(plano) {
     if(!loggedUserID) { 
         showToast("info", "Faça login para assinar um plano!"); 
-        return openAuthModal('login'); // Abre o Modal de Login corretamente 
+        return openAuthModal('login'); 
     }
+    selectedPlan = plano;
+    document.getElementById('checkoutOverlay').style.display = 'flex';
+}
+
+async function confirmarCheckout() {
+    const nome = document.getElementById('checkoutNome').value;
+    const cpf = document.getElementById('checkoutCpf').value.replace(/\D/g, '');
     
+    if(nome.length < 5) return showToast("error", "Insira seu nome completo.");
+    if(cpf.length !== 11) return showToast("error", "CPF inválido. Insira 11 dígitos.");
+
     showToast("info", "Gerando cobrança PIX...");
+    closeModal('checkoutOverlay');
     
     try {
         const res = await fetch(`${API_BASE_URL}/api/comprar`, { 
             method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ user_id: loggedUserID, plano: plano, email: loggedUserEmail }) 
+            body: JSON.stringify({ 
+                user_id: loggedUserID, 
+                plano: selectedPlan, 
+                email: loggedUserEmail,
+                nome: nome,
+                cpf: cpf
+            }) 
         });
         const data = await res.json();
         

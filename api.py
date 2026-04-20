@@ -109,15 +109,25 @@ def gerar_pagamento():
     email_payer = email_recebido if email_recebido else "cliente@email.com"
     preco, dias = (15.00, 7) if plano == "7 Dias" else (35.00, 30)
 
+    # Recebe os novos dados do checkout
+    dados_checkout = request.json
+    nome_real = dados_checkout.get("nome", "Cliente BS")
+    cpf_real = str(dados_checkout.get("cpf", "")).replace(".", "").replace("-", "").strip()
+    
+    # Divide nome para first/last name conforme exigido pelo MP
+    partes_nome = nome_real.split(" ", 1)
+    p_nome = partes_nome[0]
+    u_nome = partes_nome[1] if len(partes_nome) > 1 else "Optimizer Pro"
+
     payment_data = {
         "transaction_amount": preco,
-        "description": f"Assinatura {plano} - BS Optimizer Pro",
+        "description": f"Plano VIP {plano} - BS Optimizer Pro",
         "payment_method_id": "pix",
         "payer": {
             "email": email_payer, 
-            "first_name": "Cliente",
-            "last_name": "BS Optimizer",
-            "identification": { "type": "CPF", "number": "53028212046" }
+            "first_name": p_nome,
+            "last_name": u_nome,
+            "identification": { "type": "CPF", "number": cpf_real }
         },
         "external_reference": f"{user_id}_{dias}_{email_payer}"
     }
