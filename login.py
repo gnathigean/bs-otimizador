@@ -60,20 +60,21 @@ class TelaLogin(ctk.CTk):
         self.login_sucesso = False
         self.dias_restantes = 0
 
-        # Adicionando a Logo Premium
+        # Container para Logo e Título
         try:
             from PIL import Image
-            # Carregar a logo gerada
             raw_img = Image.open("logo.png")
             self.logo_img = ctk.CTkImage(light_image=raw_img, dark_image=raw_img, size=(130, 130))
             self.lbl_logo = ctk.CTkLabel(self, image=self.logo_img, text="")
-            self.lbl_logo.pack(pady=(40, 10))
+            self.lbl_logo.pack(pady=(40, 5))
         except Exception:
-            self.lbl_titulo = ctk.CTkLabel(self, text="⚡ BS OPTIMIZER", font=ctk.CTkFont(family="Orbitron", size=28, weight="bold"), text_color="#8b5cf6")
-            self.lbl_titulo.pack(pady=(50, 5))
+            pass
+
+        self.lbl_titulo = ctk.CTkLabel(self, text="⚡ BS OPTIMIZER", font=ctk.CTkFont(family="Orbitron", size=24, weight="bold"), text_color="#8b5cf6")
+        self.lbl_titulo.pack(pady=(10, 5))
 
         self.lbl_sub = ctk.CTkLabel(self, text="Painel de Acesso Exclusivo", font=("Inter", 14, "bold"), text_color="#94a3b8")
-        self.lbl_sub.pack(pady=(0, 40))
+        self.lbl_sub.pack(pady=(0, 30))
 
         self.entry_user = ctk.CTkEntry(self, placeholder_text="👤 Nome de Usuário", width=340, height=50, font=("Inter", 14), corner_radius=12, border_width=2, border_color="#1E1E2E", fg_color="#0c0c12", text_color="#f8fafc")
         self.entry_user.pack(pady=15)
