@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from PIL import Image
 import threading
 import queue
 import time
@@ -32,7 +33,7 @@ ctk.set_appearance_mode("dark")
 
 CORES = {
     "bg_principal":    "#050508",
-    "bg_sidebar":      "#0A0A0F",
+    "bg_sidebar":      "#08080C",
     "texto_base":      "#F8FAFC",
     "texto_secundario":"#94A3B8",
     "roxo_destaque":   "#8B5CF6",
@@ -78,11 +79,21 @@ class App(ctk.CTk):
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         self.sidebar.grid_rowconfigure(10, weight=1)
 
-        ctk.CTkLabel(
-            self.sidebar, text="⚡ BS OPTIMIZER",
-            font=ctk.CTkFont(size=26, weight="bold", family="Impact"),
-            text_color=CORES["roxo_destaque"]
-        ).grid(row=1, column=0, padx=20, pady=(40, 30))
+        # Logo Premium na Sidebar
+        try:
+            raw_img = Image.open("logo.png")
+            self.logo_img = ctk.CTkImage(light_image=raw_img, dark_image=raw_img, size=(110, 110))
+            self.lbl_logo = ctk.CTkLabel(self.sidebar, image=self.logo_img, text="")
+            self.lbl_logo.grid(row=1, column=0, padx=20, pady=(35, 10))
+        except Exception:
+            ctk.CTkLabel(
+                self.sidebar, text="⚡ BS OPTIMIZER",
+                font=ctk.CTkFont(size=24, weight="bold", family="Orbitron"),
+                text_color=CORES["roxo_destaque"]
+            ).grid(row=1, column=0, padx=20, pady=(40, 20))
+
+        self.lbl_versao = ctk.CTkLabel(self.sidebar, text="ELITE EDITION v3.5", font=("Inter", 11, "bold"), text_color="#444466")
+        self.lbl_versao.grid(row=2, column=0, pady=(0, 25))
 
         # Botões de menu
         self.btn_info        = self.criar_botao_menu("📊 Hardware Info",        2, "info")
@@ -92,13 +103,27 @@ class App(ctk.CTk):
         self.btn_ferramentas = self.criar_botao_menu("🛠️ Ferramentas Pro",      6, "ferramentas")
         self.btn_stats       = self.criar_botao_menu("🎮 Blood Strike Stats",   7, "stats")
 
-        # Painel de licença
-        sessao = ctk.CTkFrame(self.sidebar, fg_color="transparent")
-        sessao.grid(row=10, column=0, sticky="s", pady=25)
+        # Painel de licença e Suporte
+        sessao = ctk.CTkFrame(self.sidebar, fg_color=CORES["card_info"], corner_radius=15, border_width=1, border_color=CORES["borda"])
+        sessao.grid(row=10, column=0, sticky="s", pady=20, padx=15)
+        
         ctk.CTkLabel(sessao, text=f"👤 {self.username}",
-                     font=("Inter", 14, "bold"), text_color=CORES["texto_base"]).pack()
-        ctk.CTkLabel(sessao, text=f"👑 VIP | {self.dias_restantes} Dias",
-                     font=("Inter", 13, "bold"), text_color=CORES["verde_neon"]).pack(pady=(2, 0))
+                     font=("Inter", 14, "bold"), text_color=CORES["texto_base"]).pack(pady=(12, 0))
+        
+        vip_tag = ctk.CTkFrame(sessao, fg_color="rgba(0, 230, 118, 0.1)", corner_radius=20)
+        vip_tag.pack(pady=5, padx=15)
+        ctk.CTkLabel(vip_tag, text=f"👑 VIP: {self.dias_restantes} DIAS",
+                     font=("Inter", 11, "bold"), text_color=CORES["verde_neon"]).pack(padx=12, pady=4)
+
+        # Botão Suporte WhatsApp
+        self.btn_suporte = ctk.CTkButton(
+            sessao, text="💬 SUPORTE WHATSAPP", 
+            font=("Inter", 11, "bold"), height=32,
+            fg_color="#25D366", hover_color="#128C7E",
+            text_color="#fff", corner_radius=8,
+            command=self.abrir_suporte_whatsapp
+        )
+        self.btn_suporte.pack(pady=(5, 12), padx=15)
 
         # Helper de layout
         def cfg(frame):
@@ -933,8 +958,8 @@ class App(ctk.CTk):
     def criar_titulo(self, frame_pai, texto):
         ctk.CTkLabel(
             frame_pai, text=texto,
-            font=("Impact", 24), text_color=CORES["roxo_destaque"]
-        ).pack(anchor="w", pady=(20, 15), padx=40)
+            font=("Orbitron", 22, "bold"), text_color=CORES["roxo_destaque"]
+        ).pack(anchor="w", pady=(25, 15), padx=40)
 
     def criar_botao_menu(self, texto, linha, nome):
         btn = ctk.CTkButton(
@@ -1021,6 +1046,10 @@ class App(ctk.CTk):
             "stats":       self.btn_stats,
         }
         botoes_map[nome].configure(fg_color=CORES["roxo_destaque"], text_color="#fff")
+
+    def abrir_suporte_whatsapp(self):
+        import webbrowser
+        webbrowser.open("https://wa.me/5511999999999?text=Olá,%20preciso%20de%20suporte%20com%20o%20BS%20Optimizer%20Pro")
 
 
 if __name__ == "__main__":
