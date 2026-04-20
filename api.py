@@ -118,7 +118,7 @@ def gerar_pagamento():
             "email": email_payer, 
             "first_name": "Cliente",
             "last_name": "BS Optimizer",
-            "identification": { "type": "CPF", "number": "19119119100" }
+            "identification": { "type": "CPF", "number": "68725841005" }
         },
         "external_reference": f"{user_id}_{dias}_{email_payer}"
     }
@@ -128,6 +128,7 @@ def gerar_pagamento():
         pagamento = resultado["response"]
         
         if "id" in pagamento:
+            print(f"PIX GERADO COM SUCESSO: ID {pagamento['id']} para User {user_id}")
             return jsonify({
                 "sucesso": True,
                 "payment_id": pagamento["id"],
@@ -135,13 +136,24 @@ def gerar_pagamento():
                 "qr_code_base64": pagamento["point_of_interaction"]["transaction_data"]["qr_code_base64"]
             })
         else:
-            # LOG para depuração direta no Render
-            print(f"DEBUG MP ERRO: {pagamento}")
-            erro_mp = pagamento.get('message', 'Erro na API Mercado Pago')
-            return jsonify({"sucesso": False, "mensagem": erro_mp})
+            # LOG detalhado para Render
+            print(f"--- ERRO MERCADO PAGO ---")
+            print(f"Status Code: {resultado.get('status')}")
+            print(f"Resposta JSON: {pagamento}")
+            print(f"-------------------------")
+            
+            mensagem_erro = pagamento.get('message', 'Erro desconhecido na API Mercado Pago')
+            if "cause" in pagamento and pagamento["cause"]:
+                detalhes = pagamento["cause"][0].get('description', '')
+                mensagem_erro = f"{mensagem_erro}: {detalhes}"
+            
+            return jsonify({"sucesso": False, "mensagem": mensagem_erro})
+            
     except Exception as e:
-        print(f"DEBUG MP EXCEPTION: {str(e)}")
-        return jsonify({"sucesso": False, "mensagem": str(e)})
+        import traceback
+        print(f"EXCEPTION MP: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {str(e)}"})
 
 @app.route('/api/check_payment/<int:payment_id>', methods=['GET'])
 def check_payment(payment_id):

@@ -67,6 +67,7 @@ async function handleAuth(e) {
         if(data.sucesso) {
             if(isLoginMode) {
                 loggedUserID = data.user_id;
+                loggedUserEmail = data.email;
                 document.getElementById('guestNav').style.display = 'none';
                 document.getElementById('userNav').style.display = 'flex';
                 document.getElementById('navUsername').innerText = data.username;
