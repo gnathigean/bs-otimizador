@@ -139,6 +139,12 @@ class App(ctk.CTk):
         # 0. HARDWARE INFO
         # ==============================================================
         self.frame_info = cfg(ctk.CTkFrame(self, fg_color="transparent"))
+        
+        # Indicador de Status Elite
+        self.status_elite = ctk.CTkFrame(self.frame_info, fg_color="#0a1a12", corner_radius=12, border_width=1, border_color=CORES["roxo_destaque"])
+        self.status_elite.pack(fill="x", padx=40, pady=(20, 0))
+        ctk.CTkLabel(self.status_elite, text="⚡ ELITE PERFORMANCE BOOST: ATIVO", font=("Orbitron", 12, "bold"), text_color=CORES["roxo_destaque"]).pack(pady=10)
+
         self.criar_titulo(self.frame_info, "DIAGNÓSTICO DO SISTEMA")
         self.criar_painel_hardware(self.frame_info)
 
