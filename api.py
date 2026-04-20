@@ -27,8 +27,7 @@ def serve_static(path):
 
 EMAIL_REMETENTE = os.getenv("EMAIL_REMETENTE")
 EMAIL_SENHA = os.getenv("EMAIL_SENHA")
-MP_TOKEN = os.getenv("MP_ACCESS_TOKEN")
-
+MP_TOKEN = os.getenv("MP_ACCESS_TOKEN", "").strip()
 sdk = mercadopago.SDK(MP_TOKEN)
 
 def enviar_email(destinatario, assunto, corpo_html):
@@ -178,6 +177,44 @@ def check_payment(payment_id):
         return jsonify({"sucesso": True, "status": pagamento.get("status", "pending")})
     except Exception as e:
         return jsonify({"sucesso": False, "mensagem": str(e)})
+
+@app.route('/api/webhooks/mercadopago', methods=['POST'])
+def webhook_mercadopago():
+    try:
+        # Pega os dados da notificação (MP envia via params ou body dependendo da versão)
+        data = request.args if request.args else request.json
+        print(f"WEBHOOK RECEBIDO: {data}")
+
+        # O MP envia o ID do recurso e o tipo (ex: payment)
+        id_recurso = data.get('data.id') or data.get('id')
+        tipo = data.get('type') or data.get('topic')
+
+        if tipo == 'payment' and id_recurso:
+            # Consulta o status real do pagamento na API do MP
+            resultado = sdk.payment().get(id_recurso)
+            pagamento = resultado["response"]
+            
+            if pagamento.get("status") == "approved":
+                ext_ref = pagamento.get("external_reference")
+                if ext_ref:
+                    partes = ext_ref.split("_")
+                    user_id = int(partes[0])
+                    dias = int(partes[1])
+                    email_user = partes[2]
+                    
+                    # Gera a key (a função do banco já evita duplicatas pelo mp_id)
+                    nova_key = banco_dados.gerar_key_compra(user_id, dias, id_recurso)
+                    
+                    if email_user and email_user != "cliente@email.com":
+                        corpo = f"<h2>Pagamento Aprovado! 🚀</h2><p>Sua Key de 16 dígitos é:</p><h3>{nova_key}</h3>"
+                        enviar_email(email_user, "Sua Key VIP - BS Optimizer Pro", corpo)
+                    
+                    print(f"WEBHOOK: Pagamento {id_recurso} APROVADO e Key Gerada.")
+        
+        return "OK", 200
+    except Exception as e:
+        print(f"ERRO WEBHOOK: {e}")
+        return "Erro Interno", 500
 
 @app.route('/api/desktop/login', methods=['POST'])
 def desktop_login():
