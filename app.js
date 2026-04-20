@@ -25,15 +25,35 @@ function toggleWa() {
         icon.className = 'fa-solid fa-chevron-down';
     }
 }
+
+function updateUIForLoggedInUser(id, username, email) {
+    loggedUserID = id;
+    loggedUserEmail = email;
+    loggedUserName = username;
+    document.getElementById('guestNav').style.display = 'none';
+    document.getElementById('userNav').style.display = 'flex';
+    document.getElementById('navUsername').innerText = username;
+    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${username}&background=8b5cf6&color=fff`;
+}
+
 window.onload = () => { 
     document.getElementById('waBox').style.display = 'block'; 
     setTimeout(() => document.getElementById('waBox').classList.add('show'), 100); 
+    
+    // Auto-login se houver sessão salva
+    const savedSession = localStorage.getItem('bs_session');
+    if (savedSession) {
+        const session = JSON.parse(savedSession);
+        updateUIForLoggedInUser(session.id, session.username, session.email);
+        showToast("info", `Bem-vindo de volta, ${session.username}!`);
+    }
 };
 
 // --- SISTEMA DE AUTENTICAÇÃO ---
 let isLoginMode = true; 
 let loggedUserID = null; 
 let loggedUserEmail = ""; 
+let loggedUserName = "";
 let pollingInterval = null;
 const API_BASE_URL = "https://bs-optimizer-api.onrender.com"; // Mude para a URL do Render após o deploy
 
@@ -66,12 +86,17 @@ async function handleAuth(e) {
 
         if(data.sucesso) {
             if(isLoginMode) {
-                loggedUserID = data.user_id;
-                loggedUserEmail = data.email;
-                document.getElementById('guestNav').style.display = 'none';
-                document.getElementById('userNav').style.display = 'flex';
-                document.getElementById('navUsername').innerText = data.username;
-                document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${data.username}&background=8b5cf6&color=fff`;
+                updateUIForLoggedInUser(data.user_id, data.username, data.email);
+                
+                // Salvar sessão se "Lembrar-me" estiver marcado
+                if (document.getElementById('authRemember').checked) {
+                    localStorage.setItem('bs_session', JSON.stringify({
+                        id: data.user_id,
+                        username: data.username,
+                        email: data.email
+                    }));
+                }
+                
                 closeModal('authOverlay');
                 showToast("success", `Login efetuado! Bem-vindo, ${data.username}.`);
                 document.getElementById('authUser').value = ""; document.getElementById('authPass').value = "";
@@ -88,6 +113,8 @@ async function handleAuth(e) {
 function logout() { 
     loggedUserID = null; 
     loggedUserEmail = ""; 
+    loggedUserName = "";
+    localStorage.removeItem('bs_session');
     document.getElementById('guestNav').style.display = 'flex'; 
     document.getElementById('userNav').style.display = 'none'; 
     showToast("info", "Você saiu da conta."); 

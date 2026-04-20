@@ -117,7 +117,7 @@ def gerar_pagamento():
             "email": email_payer, 
             "first_name": "Cliente",
             "last_name": "BS Optimizer",
-            "identification": { "type": "CPF", "number": "68725841005" }
+            "identification": { "type": "CPF", "number": "53028212046" }
         },
         "external_reference": f"{user_id}_{dias}_{email_payer}"
     }

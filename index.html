@@ -166,6 +166,13 @@
                 <div class="input-wrap"><i class="fa-solid fa-user"></i><input type="text" id="authUser" placeholder="Nome de Usuário" required autocomplete="off"></div>
                 <div class="input-wrap" id="emailWrap" style="display:none;"><i class="fa-solid fa-envelope"></i><input type="email" id="authEmail" placeholder="E-mail (Para receber Keys)" autocomplete="off"></div>
                 <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="authPass" placeholder="Senha" required></div>
+                <div class="auth-options" id="authOptions">
+                    <label class="check-container">
+                        <input type="checkbox" id="authRemember">
+                        <span class="checkmark"></span>
+                        Lembrar-me
+                    </label>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:15px;" id="btnAuth">ENTRAR</button>
             </form>
             <div class="auth-switch" id="switchText">Não tem conta? <a href="#" onclick="toggleAuthMode()">Crie uma gratuitamente</a></div>
