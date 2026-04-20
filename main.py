@@ -15,7 +15,7 @@ import otimizacao_gpu, entrada_instantanea, antilag
 import resolucao, snaptap, tcp_otimizar, ping_overlay, tela_cheia, unpark_cpu
 import mira_bruta, shaders, potato_mode, game_booster, carregamento_turbo
 import limpeza_bloodstrike, telemetria_win, input_lag_remover
-import servico_elite
+import servico_elite, bloodstrike_engine_fix
 
 # Módulos novos / corrigidos
 import overlay_pro        # tracker de hardware
@@ -107,6 +107,7 @@ class App(ctk.CTk):
         self.btn_visual      = self.criar_botao_menu("🎯 Interface e Tracker",  5, "visual")
         self.btn_ferramentas = self.criar_botao_menu("🛠️ Ferramentas Pro",      6, "ferramentas")
         self.btn_stats       = self.criar_botao_menu("🎮 Blood Strike Stats",   7, "stats")
+        self.btn_bs_pro      = self.criar_botao_menu("💎 Blood Strike Pro",      8, "bs_pro")
 
         # Painel de licença e Suporte
         sessao = ctk.CTkFrame(self.sidebar, fg_color=CORES["card_info"], corner_radius=15, border_width=1, border_color=CORES["borda"])
@@ -147,6 +148,12 @@ class App(ctk.CTk):
 
         self.criar_titulo(self.frame_info, "DIAGNÓSTICO DO SISTEMA")
         self.criar_painel_hardware(self.frame_info)
+
+        # ==============================================================
+        # 0.2 BLOOD STRIKE PRO ENGINE
+        # ==============================================================
+        self.frame_bs_pro = cfg(ctk.CTkFrame(self, fg_color="transparent"))
+        self.criar_aba_bs_pro(self.frame_bs_pro)
 
         # ==============================================================
         # 1. DESEMPENHO
@@ -316,6 +323,25 @@ class App(ctk.CTk):
         self.frame_stats = cfg(ctk.CTkFrame(self, fg_color="transparent"))
         self.criar_titulo(self.frame_stats, "BLOOD STRIKE STATS")
         self._criar_painel_stats()
+
+    def criar_aba_bs_pro(self, frame_pai):
+        self.criar_titulo(frame_pai, "BLOOD STRIKE PRO — ENGINE EXCLUSIVE")
+        
+        container = ctk.CTkFrame(frame_pai, fg_color="transparent")
+        container.pack(fill="x", padx=40)
+        
+        self.sw_engine_pro = self.criar_switch_com_info(container, "🛡️ Unity Engine Overdrive", "Força processamento assíncrono de shaders e desabilita telemetria interna da engine Unity.", command=self.acionar_engine_pro)
+        self.sw_input_pro  = self.criar_switch_com_info(container, "⚡ Input Lag Destroyer 2.0", "Desativa Fullscreen Optimizations e reduz o MouseDataQueue para zero latência percebida.", command=self.acionar_input_pro)
+        
+        card_limpeza = ctk.CTkFrame(frame_pai, fg_color=CORES["card_info"], corner_radius=15, border_width=1, border_color=CORES["borda"])
+        card_limpeza.pack(fill="x", padx=40, pady=20)
+        
+        ctk.CTkLabel(card_limpeza, text="🧬 Manutenção de Assets e Logs", font=("Inter", 14, "bold"), text_color=CORES["texto_base"]).pack(pady=(15, 5))
+        
+        self.sw_auto_clean = self.criar_switch_com_info(card_limpeza, "🔄 Limpeza Automática ao Sair", "Deleta logs e caches inúteis toda vez que você fecha o otimizador.")
+        self.sw_auto_clean.switch.select() # Vem padrão ativado no Pro
+        
+        self.btn_deep_clean = self.criar_botao_acao_com_info(card_limpeza, "🔥 Deep Clean (Assets)", "Faz uma faxina pesada nas pastas de shaders e logs da NetEase.", CORES["vermelho_neon"], "#d32f2f", command=self.acionar_deep_clean)
 
         # Inicialização
         self.selecionar_frame("info")
@@ -1064,12 +1090,13 @@ class App(ctk.CTk):
             "visual":      self.frame_visual,
             "ferramentas": self.frame_ferramentas,
             "stats":       self.frame_stats,
+            "bs_pro":      self.frame_bs_pro,
         }
         self.frame_atual = frames[nome]
         self.frame_atual.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
         botoes = [self.btn_info, self.btn_desempenho, self.btn_rede,
-                  self.btn_visual, self.btn_ferramentas, self.btn_stats]
+                  self.btn_visual, self.btn_ferramentas, self.btn_stats, self.btn_bs_pro]
         for btn in botoes:
             btn.configure(fg_color="transparent", text_color=CORES["texto_secundario"])
 
@@ -1080,8 +1107,37 @@ class App(ctk.CTk):
             "visual":      self.btn_visual,
             "ferramentas": self.btn_ferramentas,
             "stats":       self.btn_stats,
+            "bs_pro":      self.btn_bs_pro,
         }
         botoes_map[nome].configure(fg_color=CORES["roxo_destaque"], text_color="#fff")
+
+    # ==================================================================
+    # AÇÕES — BLOOD STRIKE PRO
+    # ==================================================================
+
+    def acionar_engine_pro(self):
+        ativado = self.sw_engine_pro.get() == 1
+        if ativado:
+            sucesso, msg = bloodstrike_engine_fix.otimizar_engine_bs()
+            self.ui_segura(lambda: messagebox.showinfo("Engine Pro", msg))
+        else:
+            bloodstrike_engine_fix.reset_engine_bs()
+        self.atualizar_ui_switch(self.sw_engine_pro, ativado, "🛡️ Unity Engine Overdrive")
+
+    def acionar_input_pro(self):
+        ativado = self.sw_input_pro.get() == 1
+        if ativado:
+            sucesso, msg = bloodstrike_engine_fix.otimizar_engine_bs()
+            self.ui_segura(lambda: messagebox.showinfo("Input Pro", msg))
+        self.atualizar_ui_switch(self.sw_input_pro, ativado, "⚡ Input Lag Destroyer 2.0")
+
+    def acionar_deep_clean(self):
+        def worker():
+            self.ui_segura(lambda: self.btn_deep_clean.configure(text="⏳ Limpando..."))
+            sucesso, msg = bloodstrike_engine_fix.limpar_cache_logs_bs()
+            self.ui_segura(lambda: self.btn_deep_clean.configure(text="🔥 Deep Clean (Assets)"))
+            self.ui_segura(lambda: messagebox.showinfo("Deep Clean", msg))
+        threading.Thread(target=worker, daemon=True).start()
 
     def abrir_suporte_whatsapp(self):
         import webbrowser
@@ -1090,6 +1146,13 @@ class App(ctk.CTk):
 
     def on_closing(self):
         """Reverte as configurações críticas ao fechar para criar dependência do software."""
+        # Limpeza Automática Blood Strike Pro
+        try:
+            if hasattr(self, 'sw_auto_clean') and self.sw_auto_clean.get() == 1:
+                bloodstrike_engine_fix.limpar_cache_logs_bs()
+        except:
+            pass
+
         if messagebox.askyesno("Sair", "Deseja encerrar o BS Optimizer Pro?\nAs otimizações em tempo real serão desativadas."):
             # Desativa o serviço e reverte o carregamento turbo
             servico_elite.servico.parar()

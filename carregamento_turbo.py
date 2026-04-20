@@ -65,7 +65,14 @@ def otimizar_carregamento():
             'powershell -WindowStyle Hidden -Command "Disable-MMAgent -mc"',
 
             # ── 8. Aumenta Working Set do sistema para manter assets em RAM ───
+            # ── 8. Aumenta Working Set do sistema para manter assets em RAM ───
             'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "IoPageLockLimit" /t REG_DWORD /d "983040" /f',
+
+            # ── 9. Prefetch Inteligente (Boot + Apps, sem prejudicar o jogo) ────
+            'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters" /v "EnableSuperfetch" /t REG_DWORD /d "2" /f',
+
+            # ── 10. Cache de Shaders Ilimitado (NVIDIA) ───────────────────────
+            'reg add "HKLM\\SOFTWARE\\NVIDIA Corporation\\Global\\OpenGL\\ShaderCacheSize" /t REG_DWORD /d "4294967295" /f'
         ]
 
         for cmd in comandos:
